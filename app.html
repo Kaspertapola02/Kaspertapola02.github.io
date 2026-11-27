@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guess the Gunner</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #f4f1ea;
+      color: #222222;
+    }
+    header {
+      background-color: #ef0107;
+      color: #ffffff;
+      text-align: center;
+      padding: 20px 10px;
+    }
+    header h1 { margin: 0; font-family: Georgia, serif; }
+    header p { margin: 6px 0 0; }
+    main { max-width: 760px; margin: 20px auto; padding: 0 12px; }
+    .panel {
+      background-color: #ffffff;
+      border: 1px solid #cccccc;
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .controls { display: flex; gap: 8px; flex-wrap: wrap; }
+    input[type="text"] {
+      flex: 1;
+      min-width: 180px;
+      padding: 10px;
+      font-size: 16px;
+      border: 2px solid #063672;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px 16px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      background-color: #063672;
+      color: #ffffff;
+      cursor: pointer;
+    }
+    button:hover { background-color: #0a4fa8; }
+    button:disabled { background-color: #888888; cursor: not-allowed; }
+    #message { min-height: 24px; margin-top: 10px; font-weight: bold; }
+    #hint { margin-top: 8px; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td {
+      border: 1px solid #cccccc;
+      padding: 8px;
+      text-align: center;
+      font-size: 14px;
+    }
+    th { background-color: #063672; color: #ffffff; }
+    td.correct { background-color: #2e7d32; color: #ffffff; font-weight: bold; }
+    td.wrong { background-color: #e0e0e0; color: #222222; }
+    td.close { background-color: #f9a825; color: #222222; font-weight: bold; }
+    .stats { display: flex; justify-content: space-around; text-align: center; }
+    .stats div span { display: block; font-size: 24px; font-weight: bold; color: #063672; }
+    .links { text-align: center; }
+    .links a { color: #063672; font-weight: bold; margin: 0 8px; }
+    .legend { font-size: 13px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Guess the Gunner</h1>
+    <p>Can you figure out the mystery Arsenal legend in 6 guesses?</p>
+  </header>
+
+  <main>
+    <div class="panel">
+      <div class="stats">
+        <div><span id="guessesLeft">6</span>Guesses left</div>
+        <div><span id="wins">0</span>Wins</div>
+        <div><span id="streak">0</span>Win streak</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="controls">
+        <input type="text" id="guessInput" list="playerList" placeholder="Type a player's name..." autocomplete="off">
+        <datalist id="playerList"></datalist>
+        <button id="guessBtn">Guess</button>
+        <button id="hintBtn">Hint</button>
+        <button id="newBtn">New Game</button>
+      </div>
+      <div id="message"></div>
+      <div id="hint"></div>
+      <div class="legend">
+        <strong>How it works:</strong> Green = exact match. Orange (shirt number) = within 3 numbers. Arrows show if the mystery number is higher (&uarr;) or lower (&darr;).
+      </div>
+    </div>
+
+    <div class="panel">
+      <table>
+        <thead>
+          <tr><th>Player</th><th>Country</th><th>Position</th><th>Shirt #</th><th>Era</th></tr>
+        </thead>
+        <tbody id="results"></tbody>
+      </table>
+    </div>
+
+    <div class="panel links">
+      <a href="scratch.html">Back to my Arsenal page</a>
+      <a href="index.html">My r&eacute;sum&eacute;</a>
+    </div>
+  </main>
+
+  <script>
+    // Arsenal legends: name, country, position, shirt number, era (decade they started), hint
+    var players = [
+      { name: "Thierry Henry", country: "France", position: "Forward", number: 14, era: 1990, hint: "He is Arsenal's all-time record goalscorer." },
+      { name: "Dennis Bergkamp", country: "Netherlands", position: "Forward", number: 10, era: 1990, hint: "His nickname was the Non-Flying Dutchman, and his first touch was famous." },
+      { name: "Patrick Vieira", country: "France", position: "Midfielder", number: 4, era: 1990, hint: "He captained the Invincibles team." },
+      { name: "Robert Pires", country: "France", position: "Midfielder", number: 7, era: 2000, hint: "He was part of the unbeaten 2003/04 season." },
+      { name: "Tony Adams", country: "England", position: "Defender", number: 6, era: 1980, hint: "He captained the club for years and played his whole career at Arsenal." },
+      { name: "Ian Wright", country: "England", position: "Forward", number: 8, era: 1990, hint: "He held the club scoring record before Thierry Henry broke it." },
+      { name: "Ashley Cole", country: "England", position: "Defender", number: 3, era: 1990, hint: "He was the left-back in the Invincibles team." },
+      { name: "Sol Campbell", country: "England", position: "Defender", number: 23, era: 2000, hint: "He joined Arsenal from their North London rivals Tottenham in 2001." },
+      { name: "Jens Lehmann", country: "Germany", position: "Goalkeeper", number: 1, era: 2000, hint: "He was in goal for the unbeaten 2003/04 season." },
+      { name: "Cesc Fabregas", country: "Spain", position: "Midfielder", number: 4, era: 2000, hint: "He became club captain in his early twenties." },
+      { name: "Robin van Persie", country: "Netherlands", position: "Forward", number: 10, era: 2000, hint: "He won the Premier League Golden Boot as an Arsenal player." },
+      { name: "Freddie Ljungberg", country: "Sweden", position: "Midfielder", number: 8, era: 1990, hint: "He scored in the 2002 FA Cup final win over Chelsea." },
+      { name: "Gilberto Silva", country: "Brazil", position: "Midfielder", number: 19, era: 2000, hint: "He was a defensive midfielder in the Invincibles team." },
+      { name: "David Seaman", country: "England", position: "Goalkeeper", number: 1, era: 1990, hint: "He was Arsenal's long-serving goalkeeper and also played for England." },
+      { name: "Lee Dixon", country: "England", position: "Defender", number: 2, era: 1980, hint: "He played right-back in Arsenal's famous back four." }
+    ];
+
+    var maxGuesses = 6;
+    var secret = null;
+    var guessesUsed = 0;
+    var gameOver = false;
+    var wins = 0;
+    var streak = 0;
+
+    var guessInput = document.getElementById("guessInput");
+    var guessBtn = document.getElementById("guessBtn");
+    var hintBtn = document.getElementById("hintBtn");
+    var newBtn = document.getElementById("newBtn");
+    var messageEl = document.getElementById("message");
+    var hintEl = document.getElementById("hint");
+    var resultsEl = document.getElementById("results");
+    var guessesLeftEl = document.getElementById("guessesLeft");
+    var winsEl = document.getElementById("wins");
+    var streakEl = document.getElementById("streak");
+    var listEl = document.getElementById("playerList");
+
+    // Fill in the autocomplete list
+    players.forEach(function (p) {
+      var opt = document.createElement("option");
+      opt.value = p.name;
+      listEl.appendChild(opt);
+    });
+
+    // Load saved stats (wrapped in try/catch in case storage is blocked)
+    try {
+      wins = parseInt(localStorage.getItem("gunnerWins"), 10) || 0;
+      streak = parseInt(localStorage.getItem("gunnerStreak"), 10) || 0;
+    } catch (e) { /* ignore */ }
+
+    function saveStats() {
+      try {
+        localStorage.setItem("gunnerWins", wins);
+        localStorage.setItem("gunnerStreak", streak);
+      } catch (e) { /* ignore */ }
+    }
+
+    function updateStats() {
+      guessesLeftEl.textContent = maxGuesses - guessesUsed;
+      winsEl.textContent = wins;
+      streakEl.textContent = streak;
+    }
+
+    function findPlayer(text) {
+      var wanted = text.trim().toLowerCase();
+      for (var i = 0; i < players.length; i++) {
+        if (players[i].name.toLowerCase() === wanted) { return players[i]; }
+      }
+      return null;
+    }
+
+    function makeCell(text, cssClass) {
+      var td = document.createElement("td");
+      td.textContent = text;
+      td.className = cssClass;
+      return td;
+    }
+
+    function addRow(guess) {
+      var tr = document.createElement("tr");
+      tr.appendChild(makeCell(guess.name, guess.name === secret.name ? "correct" : "wrong"));
+      tr.appendChild(makeCell(guess.country, guess.country === secret.country ? "correct" : "wrong"));
+      tr.appendChild(makeCell(guess.position, guess.position === secret.position ? "correct" : "wrong"));
+
+      var numText = String(guess.number);
+      var numClass = "wrong";
+      if (guess.number === secret.number) {
+        numClass = "correct";
+      } else {
+        numText += guess.number < secret.number ? " \u2191" : " \u2193";
+        if (Math.abs(guess.number - secret.number) <= 3) { numClass = "close"; }
+      }
+      tr.appendChild(makeCell(numText, numClass));
+
+      var eraText = guess.era + "s";
+      var eraClass = "wrong";
+      if (guess.era === secret.era) {
+        eraClass = "correct";
+      } else {
+        eraText += guess.era < secret.era ? " \u2191" : " \u2193";
+      }
+      tr.appendChild(makeCell(eraText, eraClass));
+
+      resultsEl.insertBefore(tr, resultsEl.firstChild);
+    }
+
+    function endGame(won) {
+      gameOver = true;
+      guessBtn.disabled = true;
+      hintBtn.disabled = true;
+      if (won) {
+        wins++;
+        streak++;
+        messageEl.textContent = "Correct! It was " + secret.name + ". You got it in " + guessesUsed + (guessesUsed === 1 ? " guess!" : " guesses!");
+        messageEl.style.color = "#2e7d32";
+      } else {
+        streak = 0;
+        messageEl.textContent = "Out of guesses! The mystery player was " + secret.name + ".";
+        messageEl.style.color = "#c62828";
+      }
+      saveStats();
+      updateStats();
+    }
+
+    function makeGuess() {
+      if (gameOver) { return; }
+      var guess = findPlayer(guessInput.value);
+      if (!guess) {
+        messageEl.textContent = "Pick a player from the list.";
+        messageEl.style.color = "#c62828";
+        return;
+      }
+      guessesUsed++;
+      messageEl.textContent = "";
+      addRow(guess);
+      guessInput.value = "";
+      updateStats();
+      if (guess.name === secret.name) {
+        endGame(true);
+      } else if (guessesUsed >= maxGuesses) {
+        endGame(false);
+      }
+    }
+
+    function showHint() {
+      if (gameOver) { return; }
+      hintEl.textContent = "Hint: " + secret.hint;
+    }
+
+    function newGame() {
+      secret = players[Math.floor(Math.random() * players.length)];
+      guessesUsed = 0;
+      gameOver = false;
+      guessBtn.disabled = false;
+      hintBtn.disabled = false;
+      resultsEl.innerHTML = "";
+      messageEl.textContent = "";
+      hintEl.textContent = "";
+      guessInput.value = "";
+      updateStats();
+    }
+
+    guessBtn.addEventListener("click", makeGuess);
+    hintBtn.addEventListener("click", showHint);
+    newBtn.addEventListener("click", newGame);
+    guessInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") { makeGuess(); }
+    });
+
+    newGame();
+  </script>
+
+</body>
+</html>
