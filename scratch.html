@@ -6,7 +6,9 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
   <div class="banner">North London Forever</div>
+
   <div class="box" id="top">
     <h1>Arsenal Football Club</h1>
     <p>Welcome to my page about Arsenal, the soccer club my family has supported for generations. Soccer is more than just a sport for me, and Arsenal is a big part of why. On this page you can read about the club, see why I support them, and check out a few of the things that make them special.</p>
@@ -17,7 +19,7 @@
     <h2>Explore More</h2>
     <ul>
       <li><a href="app.html">Play my web app: Guess the Gunner</a></li>
-            <li><a href="index.html">Back to my professional resume page</a></li>
+      <li><a href="index.html">Back to my professional resume page</a></li>
     </ul>
   </div>
 
@@ -35,10 +37,38 @@
     <iframe width="100%" height="450" src="https://www.youtube.com/embed/Cl4dT3AgJH8" title="The 22-Year Wait Is Finally Over! Arsenal Are Champions" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
   </div>
 
-  <div class="box" style="max-width: 1400px; overflow-x: auto;">
+  <div class="box" id="tableauBox" style="max-width: 1100px;">
     <h2>Arsenal by the Numbers</h2>
     <p>This interactive dashboard comes from Tableau Public. Hover over or click the charts to explore the data.</p>
-    <div class='tableauPlaceholder' id='viz1795734979174' style='position: relative'><noscript><a href='#'><img alt='Arsenal Dashboard ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Kr&#47;KristinaDashboard&#47;ArsenalDashboard&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='KristinaDashboard&#47;ArsenalDashboard' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Kr&#47;KristinaDashboard&#47;ArsenalDashboard&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='en-US' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1795734979174');                    var vizElement = divElement.getElementsByTagName('object')[0];                    if ( divElement.offsetWidth > 800 ) { vizElement.style.width='1366px';vizElement.style.height='795px';} else if ( divElement.offsetWidth > 500 ) { vizElement.style.width='1366px';vizElement.style.height='795px';} else { vizElement.style.width='100%';vizElement.style.height='1977px';}                     var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+    <div id="tableauWrap">
+      <div class='tableauPlaceholder' id='viz1795734979174' style='position: relative'><noscript><a href='#'><img alt='Arsenal Dashboard ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Kr&#47;KristinaDashboard&#47;ArsenalDashboard&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='KristinaDashboard&#47;ArsenalDashboard' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Kr&#47;KristinaDashboard&#47;ArsenalDashboard&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='en-US' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1795734979174');                    var vizElement = divElement.getElementsByTagName('object')[0];                    if ( divElement.offsetWidth > 800 ) { vizElement.style.width='1366px';vizElement.style.height='795px';} else if ( divElement.offsetWidth > 500 ) { vizElement.style.width='1366px';vizElement.style.height='795px';} else { vizElement.style.width='100%';vizElement.style.height='1977px';}                     var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+    </div>
+    <script>
+      // Scale the dashboard down so it fits inside the box on medium and large screens
+      function fitTableau() {
+        var box = document.getElementById("tableauBox");
+        var wrap = document.getElementById("tableauWrap");
+        var viz = document.getElementById("viz1795734979174");
+        var available = box.clientWidth - 48;
+        if (available >= 700 && available < 1366) {
+          var scale = available / 1366;
+          viz.style.width = "1366px";
+          viz.style.transformOrigin = "top left";
+          viz.style.transform = "scale(" + scale + ")";
+          wrap.style.width = available + "px";
+          wrap.style.height = Math.round(795 * scale) + "px";
+          wrap.style.overflow = "hidden";
+        } else {
+          viz.style.width = "";
+          viz.style.transform = "none";
+          wrap.style.width = "";
+          wrap.style.height = "";
+          wrap.style.overflow = "auto";
+        }
+      }
+      window.addEventListener("load", fitTableau);
+      window.addEventListener("resize", fitTableau);
+    </script>
   </div>
 
   <div class="box" id="reasons">
