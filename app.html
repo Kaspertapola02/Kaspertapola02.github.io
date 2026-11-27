@@ -71,7 +71,7 @@
 
   <header>
     <h1>Guess the Gunner</h1>
-    <p>Can you figure out the mystery Arsenal legend in 6 guesses?</p>
+    <p>Can you figure out the mystery Arsenal player in 6 guesses?</p>
   </header>
 
   <main>
@@ -88,7 +88,6 @@
         <input type="text" id="guessInput" list="playerList" placeholder="Type a player's name..." autocomplete="off">
         <datalist id="playerList"></datalist>
         <button id="guessBtn">Guess</button>
-        <button id="hintBtn">Hint</button>
         <button id="newBtn">New Game</button>
       </div>
       <div id="message"></div>
@@ -114,7 +113,7 @@
   </main>
 
   <script>
-    // Arsenal legends: name, country, position, shirt number, era (decade they started), hint
+    // Arsenal players: name, country, position, shirt number, era (decade they started), hint
     var players = [
       { name: "Thierry Henry", country: "France", position: "Forward", number: 14, era: 1990, hint: "He is Arsenal's all-time record goalscorer." },
       { name: "Dennis Bergkamp", country: "Netherlands", position: "Forward", number: 10, era: 1990, hint: "His nickname was the Non-Flying Dutchman, and his first touch was famous." },
@@ -130,7 +129,19 @@
       { name: "Freddie Ljungberg", country: "Sweden", position: "Midfielder", number: 8, era: 1990, hint: "He scored in the 2002 FA Cup final win over Chelsea." },
       { name: "Gilberto Silva", country: "Brazil", position: "Midfielder", number: 19, era: 2000, hint: "He was a defensive midfielder in the Invincibles team." },
       { name: "David Seaman", country: "England", position: "Goalkeeper", number: 1, era: 1990, hint: "He was Arsenal's long-serving goalkeeper and also played for England." },
-      { name: "Lee Dixon", country: "England", position: "Defender", number: 2, era: 1980, hint: "He played right-back in Arsenal's famous back four." }
+      { name: "Lee Dixon", country: "England", position: "Defender", number: 2, era: 1980, hint: "He played right-back in Arsenal's famous back four." },
+      { name: "Kolo Toure", country: "Ivory Coast", position: "Defender", number: 28, era: 2000, hint: "He was a key defender in the Invincibles team." },
+      { name: "Ray Parlour", country: "England", position: "Midfielder", number: 15, era: 1990, hint: "He was a hard-working midfielder who won the league and FA Cup double in 1998 and 2002." },
+      { name: "Marc Overmars", country: "Netherlands", position: "Midfielder", number: 11, era: 1990, hint: "He was a very fast winger in the 1998 double-winning team." },
+      { name: "Mesut Ozil", country: "Germany", position: "Midfielder", number: 11, era: 2010, hint: "He was Arsenal's record signing when he arrived in 2013." },
+      { name: "Alexis Sanchez", country: "Chile", position: "Forward", number: 17, era: 2010, hint: "He scored in the 2015 FA Cup final win over Aston Villa." },
+      { name: "Aaron Ramsey", country: "Wales", position: "Midfielder", number: 16, era: 2000, hint: "He scored the winning goal in the 2014 FA Cup final." },
+      { name: "Bukayo Saka", country: "England", position: "Forward", number: 7, era: 2010, hint: "He is a winger who came through Arsenal's academy." },
+      { name: "Declan Rice", country: "England", position: "Midfielder", number: 41, era: 2020, hint: "He joined Arsenal from West Ham in 2023." },
+      { name: "Martin Odegaard", country: "Norway", position: "Midfielder", number: 8, era: 2020, hint: "He is a creative playmaker who joined from Real Madrid." },
+      { name: "William Saliba", country: "France", position: "Defender", number: 2, era: 2010, hint: "He returned from loan spells to become a first-choice center-back." },
+      { name: "Gabriel Magalhaes", country: "Brazil", position: "Defender", number: 6, era: 2020, hint: "He joined from Lille in 2020 and is known for scoring from set pieces." },
+      { name: "David Raya", country: "Spain", position: "Goalkeeper", number: 22, era: 2020, hint: "He won the Premier League Golden Glove in 2025/26." }
     ];
 
     var maxGuesses = 6;
@@ -142,7 +153,6 @@
 
     var guessInput = document.getElementById("guessInput");
     var guessBtn = document.getElementById("guessBtn");
-    var hintBtn = document.getElementById("hintBtn");
     var newBtn = document.getElementById("newBtn");
     var messageEl = document.getElementById("message");
     var hintEl = document.getElementById("hint");
@@ -224,7 +234,6 @@
     function endGame(won) {
       gameOver = true;
       guessBtn.disabled = true;
-      hintBtn.disabled = true;
       if (won) {
         wins++;
         streak++;
@@ -259,26 +268,19 @@
       }
     }
 
-    function showHint() {
-      if (gameOver) { return; }
-      hintEl.textContent = "Hint: " + secret.hint;
-    }
-
     function newGame() {
       secret = players[Math.floor(Math.random() * players.length)];
       guessesUsed = 0;
       gameOver = false;
       guessBtn.disabled = false;
-      hintBtn.disabled = false;
       resultsEl.innerHTML = "";
       messageEl.textContent = "";
-      hintEl.textContent = "";
+      hintEl.textContent = "Starting hint: " + secret.hint;
       guessInput.value = "";
       updateStats();
     }
 
     guessBtn.addEventListener("click", makeGuess);
-    hintBtn.addEventListener("click", showHint);
     newBtn.addEventListener("click", newGame);
     guessInput.addEventListener("keydown", function (event) {
       if (event.key === "Enter") { makeGuess(); }
